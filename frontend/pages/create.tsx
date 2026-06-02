@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -6,6 +7,7 @@ import { createQuiz, quizSchema, type IQuizForm, QuestionField } from '@/modules
 
 export default function CreatePage() {
   const router = useRouter();
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const { register, control, handleSubmit, watch, setValue, formState: { errors } } = useForm<IQuizForm>({
     resolver: zodResolver(quizSchema),
     defaultValues: {
@@ -19,8 +21,13 @@ export default function CreatePage() {
   const watchedQuestions = watch('questions');
 
   const onSubmit = async (data: IQuizForm) => {
-    await createQuiz(data);
-    void router.push(ROUTES.QUIZZES);
+    setSubmitError(null);
+    try {
+      await createQuiz(data);
+      void router.push(ROUTES.QUIZZES);
+    } catch {
+      setSubmitError('Failed to create quiz. Please try again.');
+    }
   };
 
   const addOption = (questionIndex: number) => {
@@ -85,6 +92,9 @@ export default function CreatePage() {
         </div>
 
         <div className="flex flex-col gap-2">
+          {submitError && (
+            <p className="text-red-500 text-sm text-center">{submitError}</p>
+          )}
           <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 w-full">
             Create Quiz
           </button>

@@ -7,12 +7,13 @@ export function useQuiz() {
   const router = useRouter();
   const { id } = router.query;
   const [quiz, setQuiz] = useState<IQuizDetail | null>(null);
+  const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
     if (typeof id === 'string') {
-      void getQuiz(id).then(setQuiz);
+      getQuiz(id).then(setQuiz).catch(() => setNotFound(true));
     }
   }, [id]);
 
-  return { quiz };
+  return { quiz, notFound };
 }

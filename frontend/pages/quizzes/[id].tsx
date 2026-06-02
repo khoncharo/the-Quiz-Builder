@@ -7,9 +7,13 @@ type Answers = Record<string, Answer>;
 
 export default function QuizDetailPage() {
   const router = useRouter();
-  const { quiz } = useQuiz();
+  const { quiz, notFound } = useQuiz();
   const [answers, setAnswers] = useState<Answers>({});
   const [submitted, setSubmitted] = useState(false);
+
+  if (notFound) {
+    return <main className="max-w-2xl mx-auto p-6">Quiz not found.</main>;
+  }
 
   if (!quiz) {
     return <main className="max-w-2xl mx-auto p-6">Loading...</main>;
